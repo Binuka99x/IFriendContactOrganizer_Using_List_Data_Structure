@@ -92,12 +92,11 @@ class ContactList {
         return nextIndex;
     }
 
-    public boolean add(Contacts contacts) {
+    public void add(Contacts contacts) {
         if (isFull()) {
             extendArray();
         }
         contactsArray[nextIndex++] = contacts;
-        return true;
     }
 
     public Contacts search(String nameOrPhone) {
@@ -107,6 +106,21 @@ class ContactList {
             }
         }
         return null;
+    }
+    private int indexOf(Contacts contacts){
+        for (int i = 0; i < nextIndex; i++) {
+            if (contactsArray[i]==contacts){
+                return i;
+            }
+        }
+        return -1;
+    }
+    public void remove(Contacts contacts) {
+        int index = indexOf(contacts);
+        for (int i = index; i < nextIndex-1; i++) {
+            contactsArray[i]=contactsArray[i+1];
+        }
+        nextIndex--;
     }
 }
 
@@ -141,7 +155,7 @@ public class contactOrganizer {
                 break;
             case 3:
                 clearConsole();
-                //deleteContacts();
+                deleteContacts();
                 break;
             case 4:
                 clearConsole();
@@ -154,6 +168,58 @@ public class contactOrganizer {
             case 6:
                 System.exit(0);
         }
+    }
+
+    public static void deleteContacts() {
+        Scanner input = new Scanner(System.in);
+        do {
+            System.out.println("------------------------------------------------------------");
+            System.out.println("|                      Delete Contact                      |");
+            System.out.println("------------------------------------------------------------\n");
+            System.out.print("Search Contact by Name or Phone Number : ");
+            String nameOrPhone = input.next();
+            Contacts contacts = contactList.search(nameOrPhone);
+            if (contacts == null) {
+                System.out.println("No Contact found for \"" + nameOrPhone + "\"");
+                System.out.print("\nDo you want to delete another contact(Y/N) : ");
+                String opt = input.next();
+                if (opt.equalsIgnoreCase("Y")) {
+                    clearConsole();
+                    continue;
+                } else if (opt.equalsIgnoreCase("N")) {
+                    clearConsole();
+                    homePage();
+                    break;
+                }
+                break;
+            }
+            System.out.println("Contact ID   : " + contacts.getId());
+            System.out.println("Name         : " + contacts.getName());
+            System.out.println("Phone Number : " + contacts.getPhoneNumber());
+            System.out.println("Company Name : " + contacts.getCompanyName());
+            System.out.println("Salary       : " + contacts.getSalary());
+            System.out.println("Birthday     : " + contacts.getDob());
+            System.out.print("\nDo you want to delete this contact(Y/N) : ");
+            String opt = input.next();
+            if (opt.equalsIgnoreCase("Y")) {
+                contactList.remove(contacts);
+                System.out.println("\nContact has been deleted successfully...\n");
+                System.out.print("Do you want to delete another contact(Y/N) : ");
+                String opt1 = input.next();
+                if (opt1.equalsIgnoreCase("Y")) {
+                    continue;
+                } else if (opt1.equalsIgnoreCase("N")) {
+                    clearConsole();
+                    homePage();
+                    break;
+                }
+            } else if (opt.equalsIgnoreCase("N")) {
+                clearConsole();
+                homePage();
+                break;
+            }
+            break;
+        } while (true);
     }
 
     public static void searchContacts() {

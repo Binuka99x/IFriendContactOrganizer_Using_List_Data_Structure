@@ -145,7 +145,7 @@ public class contactOrganizer {
                 break;
             case 4:
                 clearConsole();
-                //searchContacts();
+                searchContacts();
                 break;
             case 5:
                 clearConsole();
@@ -154,6 +154,49 @@ public class contactOrganizer {
             case 6:
                 System.exit(0);
         }
+    }
+
+    public static void searchContacts() {
+        Scanner input = new Scanner(System.in);
+        do {
+            System.out.println("------------------------------------------------------------");
+            System.out.println("|                      Search Contact                      |");
+            System.out.println("------------------------------------------------------------\n");
+            System.out.print("Search Contact by Name or Phone Number : ");
+            String nameOrPhone = input.next();
+            Contacts contacts = contactList.search(nameOrPhone);
+            if (contacts == null) {
+                System.out.println("\nNo Contact found for \"" + nameOrPhone + "\"");
+                System.out.print("\nDo you want to search another contact(Y/N) : ");
+                String opt = input.next();
+                if (opt.equalsIgnoreCase("Y")) {
+                    clearConsole();
+                    continue;
+                } else if (opt.equalsIgnoreCase("N")) {
+                    clearConsole();
+                    homePage();
+                    break;
+                }
+                break;
+            }
+            System.out.println("Contact ID   : " + contacts.getId());
+            System.out.println("Name         : " + contacts.getName());
+            System.out.println("Phone Number : " + contacts.getPhoneNumber());
+            System.out.println("Company Name : " + contacts.getCompanyName());
+            System.out.println("Salary       : " + contacts.getSalary());
+            System.out.println("Birthday     : " + contacts.getDob());
+            System.out.print("\nDo you want to search another contact(Y/N) : ");
+            String opt = input.next();
+            if (opt.equalsIgnoreCase("Y")) {
+                clearConsole();
+                continue;
+            } else if (opt.equalsIgnoreCase("N")) {
+                clearConsole();
+                homePage();
+                break;
+            }
+            break;
+        } while (true);
     }
 
     public static String generateContactID() {

@@ -17,8 +17,45 @@ class Contacts {
         this.salary = salary;
         this.dob = dob;
     }
+
     public String getId() {
         return id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public String getPhoneNumber() {
+        return phoneNumber;
+    }
+
+    public String getDob() {
+        return dob;
+    }
+
+    public String getCompanyName() {
+        return companyName;
+    }
+
+    public double getSalary() {
+        return salary;
+    }
+
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setCompanyName(String companyName) {
+        this.companyName = companyName;
+    }
+
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 }
 
@@ -34,36 +71,52 @@ class ContactList {
         this.loadFact = loadFact;
         nextIndex = 0;
     }
-    private boolean isFull(){
-        return nextIndex>=contactsArray.length;
+
+    private boolean isFull() {
+        return nextIndex >= contactsArray.length;
     }
-    private void extendArray(){
-        Contacts[] tempContactsArray = new Contacts[contactsArray.length+loadFact];
+
+    private void extendArray() {
+        Contacts[] tempContactsArray = new Contacts[contactsArray.length + loadFact];
         for (int i = 0; i < contactsArray.length; i++) {
-            tempContactsArray[i]=contactsArray[i];
+            tempContactsArray[i] = contactsArray[i];
         }
-        contactsArray=tempContactsArray;
+        contactsArray = tempContactsArray;
     }
+
     public Contacts[] getContactsArray() {
         return contactsArray;
     }
-    public int getNextIndex(){
+
+    public int getNextIndex() {
         return nextIndex;
     }
-    public boolean add(Contacts contacts){
-        if (isFull()){
+
+    public boolean add(Contacts contacts) {
+        if (isFull()) {
             extendArray();
         }
-        contactsArray[nextIndex++]=contacts;
+        contactsArray[nextIndex++] = contacts;
         return true;
+    }
+
+    public Contacts search(String nameOrPhone) {
+        for (int i = 0; i < nextIndex; i++) {
+            if (contactsArray[i].getName().equalsIgnoreCase(nameOrPhone) || contactsArray[i].getPhoneNumber().equalsIgnoreCase(nameOrPhone)) {
+                return contactsArray[i];
+            }
+        }
+        return null;
     }
 }
 
 public class contactOrganizer {
-    public static ContactList contactList = new ContactList(10,5);
+    public static ContactList contactList = new ContactList(10, 5);
+
     public static void main(String[] args) {
         homePage();
     }
+
     public static void homePage() {
         Scanner input = new Scanner(System.in);
         System.out.println("------------------------------------------------------------");
@@ -84,7 +137,7 @@ public class contactOrganizer {
                 break;
             case 2:
                 clearConsole();
-                //updateContacts();
+                updateContacts();
                 break;
             case 3:
                 clearConsole();
@@ -108,7 +161,7 @@ public class contactOrganizer {
         if (contactList.getNextIndex() == 0) {
             return "C0001";
         }
-        String lastID = contactsArray[contactList.getNextIndex()-1].getId();
+        String lastID = contactsArray[contactList.getNextIndex() - 1].getId();
         int lastNum = Integer.parseInt(lastID.substring(1));
         return String.format("C%04d", (lastNum + 1));
     }
@@ -219,6 +272,156 @@ public class contactOrganizer {
             break;
         } while (true);
     }
+
+    public static void updateContacts() {
+        Scanner input = new Scanner(System.in);
+        do {
+            System.out.println("------------------------------------------------------------");
+            System.out.println("|                      Update Contact                      |");
+            System.out.println("------------------------------------------------------------\n");
+            System.out.print("Search Contact by Name or Phone Number : ");
+            String nameOrPhone = input.next();
+            /*int index = contactList.search(nameOrPhone);
+            if (index == -1) {
+                System.out.println("No Contact found for \"" + nameOrPhone + "\"");
+                continue;
+            }*/
+            Contacts contacts = contactList.search(nameOrPhone);
+            if (contacts == null) {
+                System.out.println("No Contact found for \"" + nameOrPhone + "\"");
+                continue;
+            }
+            System.out.println("Contact ID   : " + contacts.getId());
+            System.out.println("Name         : " + contacts.getName());
+            System.out.println("Phone Number : " + contacts.getPhoneNumber());
+            System.out.println("Company Name : " + contacts.getCompanyName());
+            System.out.println("Salary       : " + contacts.getSalary());
+            System.out.println("Birthday     : " + contacts.getDob());
+            System.out.println("\nWhat do you want to update....\n");
+            System.out.println("[01] Name");
+            System.out.println("[02] Phone Number");
+            System.out.println("[03] Company Name");
+            System.out.println("[04] Salary");
+            System.out.print("Enter an option to continue : ");
+            int opt = input.nextInt();
+            switch (opt) {
+                case 1:
+                    updateName(contacts);
+                    break;
+                case 2:
+                    updatePhoneNumber(contacts);
+                    break;
+                case 3:
+                    updateCompanyName(contacts);
+                    break;
+                case 4:
+                    updateSalary(contacts);
+                    break;
+            }
+            break;
+        } while (true);
+    }
+
+    public static void updatePhoneNumber(Contacts contacts) {
+        Scanner input = new Scanner(System.in);
+        System.out.print("\033[7A");
+        System.out.print("\033[0J");
+        System.out.println("Update Phone Number");
+        System.out.println("====================");
+        String phoneNumber;
+        do {
+            System.out.print("Input New Phone Number : ");
+            phoneNumber = input.next();
+            if (!isValidPhoneNumber(phoneNumber)) {
+                System.out.println("Invalid Phone Number....Try again..");
+                continue;
+            }
+            break;
+        } while (true);
+        contacts.setPhoneNumber(phoneNumber);
+        System.out.println("Contact update successfully...");
+        System.out.print("Do you want to update a another Contact(Y/N) : ");
+        String opt = input.next();
+        if (opt.equalsIgnoreCase("Y")) {
+            clearConsole();
+            updateContacts();
+        } else if (opt.equalsIgnoreCase("N")) {
+            clearConsole();
+            homePage();
+        }
+    }
+
+    public static void updateSalary(Contacts contacts) {
+        Scanner input = new Scanner(System.in);
+        System.out.print("\033[7A");
+        System.out.print("\033[0J");
+        System.out.println("Update Salary");
+        System.out.println("==============");
+        double salary;
+        do {
+            System.out.print("Input New Salary : ");
+            salary = input.nextDouble();
+            if (salary < 0) {
+                System.out.println("Invalid Salary....Try again..");
+                continue;
+            }
+            break;
+        } while (true);
+        contacts.setSalary(salary);
+        System.out.println("Contact update successfully...");
+        System.out.print("Do you want to update a another Contact(Y/N) : ");
+        String opt = input.next();
+        if (opt.equalsIgnoreCase("Y")) {
+            clearConsole();
+            updateContacts();
+        } else if (opt.equalsIgnoreCase("N")) {
+            clearConsole();
+            homePage();
+        }
+    }
+
+    public static void updateCompanyName(Contacts contacts) {
+        Scanner input = new Scanner(System.in);
+        System.out.print("\033[7A");
+        System.out.print("\033[0J");
+        System.out.println("Update Company Name");
+        System.out.println("====================");
+        System.out.print("Input New Company Name : ");
+        String companyName = input.next();
+        contacts.setCompanyName(companyName);
+        System.out.println("Contact update successfully...");
+        System.out.print("Do you want to update a another Contact(Y/N) : ");
+        String opt = input.next();
+        if (opt.equalsIgnoreCase("Y")) {
+            clearConsole();
+            updateContacts();
+        } else if (opt.equalsIgnoreCase("N")) {
+            clearConsole();
+            homePage();
+        }
+    }
+
+    public static void updateName(Contacts contacts) {
+        Scanner input = new Scanner(System.in);
+        System.out.print("\033[7A");
+        System.out.print("\033[0J");
+        System.out.println("Update Name");
+        System.out.println("============");
+        System.out.print("Input New Name : ");
+        String name = input.next();
+        contacts.setName(name);
+        System.out.println("Contact update successfully...");
+        System.out.print("Do you want to update a another Contact(Y/N) : ");
+        String opt = input.next();
+        if (opt.equalsIgnoreCase("Y")) {
+            clearConsole();
+            updateContacts();
+        } else if (opt.equalsIgnoreCase("N")) {
+            clearConsole();
+            homePage();
+        }
+    }
+
 
     public final static void clearConsole() {
         try {
